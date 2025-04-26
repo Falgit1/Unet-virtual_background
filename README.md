@@ -1,6 +1,7 @@
 # 1. Imports and Setup Code
 
-Python
+**Python** 
+```bash
 import tensorflow as tf
 import os
 import random
@@ -9,6 +10,7 @@ import pandas as pd
 from tqdm import tqdm 
 from PIL import Image
 import matplotlib.pyplot as plt
+```
 
 ## Explanation
 The libraries used in the code:
@@ -22,9 +24,10 @@ TQDM: For progress bars during data loading.
 # 2. Loading Data from CSV
 Code
 Python
+```bash
 df = pd.read_csv("human-segmentation-main/train.csv")
 df.head()
-
+```
 ## Explanation
 Reads the CSV file containing paths to training images and their corresponding masks.
 The dataset contains two columns:
@@ -34,6 +37,7 @@ images: Paths to the images.
 # 3. Visualizing an Image and its Mask
 Code
 Python
+```bash
 p1 = "human-segmentation-main/" + df["masks"][1]
 img = Image.open(p1).resize((128, 128), Image.LANCZOS)
 plt.imshow(img)
@@ -43,6 +47,7 @@ p1 = "human-segmentation-main/" + df["images"][1]
 img2 = Image.open(p1).resize((128, 128), Image.LANCZOS)
 plt.imshow(img2)
 plt.show()
+```
 
 ## Explanation
 Loads an image and its corresponding mask for visualization.
@@ -52,6 +57,7 @@ Displays the images using Matplotlib.
 # 4. Combining Images with Masks
 Code
 Python
+```bash
 img = np.array(img)
 img2 = np.array(img2)
 overlapped = []
@@ -70,6 +76,7 @@ for i in range(shape[0]):
 result = np.array(overlapped)
 plt.imshow(result)
 plt.show()
+```
 
 ## Explanation
 Converts the images and masks into numpy arrays.
@@ -81,6 +88,7 @@ Displays the overlapped image.
 # 5. Data Loading Function Code
 
 Python
+```bash
 def load_data(data="train"):
     if data == "train":
         path = "images"
@@ -96,7 +104,7 @@ def load_data(data="train"):
         img = Image.open(path1).resize((imsize, imsize), Image.LANCZOS)
         train[i] = np.array(img)
     return train
-
+```
 ## Explanation
 Dynamically loads either training images or masks based on the data argument.
 Each image is resized to 128x128 and stored in a numpy array.
@@ -105,6 +113,7 @@ Uses a progress bar to indicate loading progress.
 # 6. Building the U-Net Model
 Code
 Python
+```bash
 inputs = tf.keras.Input((width, height, channels))
 s = tf.keras.layers.Lambda(lambda x: x / 255)(inputs)
 
@@ -116,6 +125,7 @@ outputs = tf.keras.layers.Conv2D(1, (1, 1), activation='sigmoid')(c9)
 model = tf.keras.Model(inputs=[inputs], outputs=[outputs])
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 model.summary()
+```
 
 ## Explanation
 Implements the U-Net architecture for image segmentation:
@@ -125,7 +135,9 @@ Uses binary cross-entropy as the loss function and Adam optimizer for training.
 
 # 7. Training the Model Code
 Python
+```bash
 results = model.fit(X_train, Y_train, validation_split=0.1, batch_size=16, epochs=25, callbacks=callbacks)
+```
 
 ## Explanation
 Trains the U-Net model using the preprocessed dataset:
@@ -137,11 +149,13 @@ batch_size and epochs: Hyperparameters for training.
 # 8. Prediction and Visualization
 Code
 Python
+```bash
 img = Image.open(r"E:\jupyter\projects\Face detection\data\train\images\img23.png")
 img = img.resize((128, 128), Image.LANCZOS)
 img = np.expand_dims(np.array(img), axis=0)
 pre = model1.predict(img, verbose=1)
 plt.imshow(pre[0])
+```
 
 ## Explanation
 Loads a test image, resizes it, and predicts its segmentation mask using the trained model.
@@ -149,6 +163,7 @@ Visualizes the predicted mask.
 
 # 9. Overlapping Foreground and Background Code
 Python
+```bash
 def overlap(img, mask):
     overlapped = []
     shape = img.shape
@@ -175,6 +190,7 @@ def overlap_with_background(img):
             l1.append(tem)
         overlapped.append(l1)
     return np.array(overlapped)
+```
 
 ## Explanation
 overlap: Combines the image and mask by retaining pixels in the foreground and masking other regions.
@@ -183,6 +199,7 @@ overlap_with_background: Replaces the background with a specified image.
 # 10. Live Video Background Replacement
 Code
 Python
+```bash
 import cv2
 cap = cv2.VideoCapture(0)
 while True:
@@ -195,6 +212,7 @@ while True:
     cv2.imshow("CAM1", frame)
 cap.release()
 cv2.destroyAllWindows()
+```
 
 ## Explanation
 Captures live video from the webcam using OpenCV.
